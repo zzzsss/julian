@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+    <div>
+        Menu:
+        <a href="{{ url_for('main.welcome') }}">welcome</a>
+        <a href="{{ url_for('main.settings') }}">settings</a>
+        <a href="{{ url_for('main.receivings') }}">receivings</a>
+        <a href="{{ url_for('main.sendings') }}">sendings</a>
+        <a href="{{ url_for('main.sessions0') }}">sessions</a>
+        <a href="{{ url_for('main.writings') }}">writings</a>
+        <a href="{{ url_for('main.penpals0') }}">penpals</a>
+        <!--<p>Hello (for debug), {{ user }}.</p>-->
+        {%block main%}{%endblock%}
+    </div>
+{% endblock %}

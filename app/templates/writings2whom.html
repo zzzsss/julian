@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block main %}
+  <h2>Ready to write a letter? Please select to whom?</h2>
+  <a href="{{ url_for('main.writings', system=1) }}">System</a>
+  <a href="{{ url_for('main.penpals0') }}">Penpals</a>
+  <a href="{{ url_for('main.sessions0') }}">Temp-friends</a>
+{% endblock %}

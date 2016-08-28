@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <p>
+        From: <a href="{{ url_for('main.penpals', uid=letter.sender.id) }}">{{letter.sender.penname}}</a>
+        To:
+        {% if letter.receiver %}
+            <a href="{{ url_for('main.penpals', uid=letter.receiver.id) }}">{{letter.receiver.penname}}</a>
+        {% else %}
+            System
+        {% endif %}
+    </p>
+    <p>Write-time: {{letter.write_time}} Sent-time: {{letter.sent_time}}</p>
+    <p>Title: {{letter.title}}</p>
+    <p>Text: {{letter.text|safe}}</p>
+    <br>
+    {% if info_reply %}
+        <a href="{{ url_for('main.writings', uid=info_reply['uid'], lid=info_reply['lid']) }}">reply</a>
+    {% else %}
+        <a> reply(can't)</a>
+    {% endif %}
+    {% if 'checked_for_temp' in info_reply and info_reply['checked_for_temp'] %}
+        The sender want to be your penpal, if you want too, reply and check.
+    {% endif %}
+{% endblock %}
