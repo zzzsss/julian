@@ -2,7 +2,7 @@
 
 {% block main %}
     <h2>The friend's info:</h2>
-    Pen-name:{{other.penname}} Gender:{{other.gender}} #letters:{{f.num}}
+    Pen-name:{{other.penname}} Gender:{{["boy", "girl"][other.gender]}} #letters:{{f.num}}
     {% if if_write %}
         <p><a href="{{ url_for('main.writings', uid=other.id) }}">write</a></p>
     {% endif %}

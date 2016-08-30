@@ -3,7 +3,7 @@
 {% block page_content %}
     <h2>Logs for the magic.</h2>
     <ul class="entries">
-        {% for one in ls %}
+        {% for one in logs %}
         <li>{{one.__dict__}}</li>
         {% endfor %}
     </ul>

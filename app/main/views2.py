@@ -13,7 +13,7 @@ def letters(lid):
     """ To show one letter and some operations for this one
     :Description: Only when current-user is sender or receiver
     :param lid: the id of the letter
-    :Use: User.get_one_byid; Letter.get_one_byid
+    :Use: User.get_one_byid; Letter.get_one_byid; Letter_temp.get_one_byid; get_info_reply
     """
     user = get_user_or_401()
     # get the letter corresponding to lid
@@ -25,14 +25,19 @@ def letters(lid):
     # check for the letter
     info_reply, _ = get_info_reply(me=user, letter=letter)
     # check and change the status
+    me_checked = None
     if user.id == letter.recv_id:
         if letter.status == Letter.MC_STA_ON:
             abort(401)
         elif letter.status == Letter.MC_STA_SENT:
             letter.status = Letter.MC_STA_OPN   #open it
             add_commit_one(letter)
+    else:
+        if letter.type == Letter.MC_TO_TMP:
+            me_checked = get_one_byid(Letter_temp, letter.id).checked
     # todo: maybe rethink about the interface to the html
-    return render_template("one_letter.html", letter=letter, info_reply=info_reply)
+    return render_template("one_letter.html", letter=letter, info_reply=info_reply,
+                           me=user, me_check=me_checked, datetime=datetime)
 
 # To write a letter
 @main.route('/writings', methods=['GET','POST'])
@@ -59,22 +64,26 @@ def writings():
         return render_template('writings.html', form=form, system=1, other=None, lo=None)
     # 1.2 uid
     num_uid = request.args.get('uid', None, int)
+    num_lid = request.args.get('lid', None, int)
     if num_uid is not None:
         # first check if friend-ok
         other = get_one_byid(User, num_uid)
         f = Friend.get_one_bytwoid(user.id, num_uid)
         if other is None or f is None or f.status != Friend.MC_STA_OK:
-            abort(401)
-        form = LetterForm()
-        if form.validate_on_submit():
-            # post a normal letter
-            l0 = Letter(send_id=user.id, recv_id=num_uid, type=Letter.MC_TO_FR,
-                        title=form.title.data, text=form.text.data)
-            add_commit_one(l0)
-            return render_template('writings_ok.html')
-        return render_template('writings.html', form=form, system=None, other=other, lo=None)
-    # 1.3 lid
-    num_lid = request.args.get('lid', None, int)
+            if num_lid is None:
+                abort(401)
+            # else: # fall through to num_lid check!! This and the link in writings.html guarantees
+            #       # that if <friend-ok>, always send with uid arg
+        else:
+            form = LetterForm()
+            if form.validate_on_submit():
+                # post a normal letter
+                l0 = Letter(send_id=user.id, recv_id=num_uid, type=Letter.MC_TO_FR,
+                            title=form.title.data, text=form.text.data)
+                add_commit_one(l0)
+                return render_template('writings_ok.html')
+            return render_template('writings.html', form=form, system=None, other=other, lo=None)
+    # 1.3 lid -- if already friend, should use uid=?
     if num_lid is not None:
         # check, re-use the get_info_reply
         info_reply, those = get_info_reply(user, num_lid)
@@ -82,7 +91,7 @@ def writings():
             abort(401)
         letter_origin = those[1]
         other = those[2]
-        letter_temp_origin = those[3]
+        letter_temp_origin = those[4]
         # to see whether one has checked or not
         tmp_checked = checked_forone(user, letter_temp_origin.sid)
         if tmp_checked:
@@ -99,6 +108,9 @@ def writings():
                 to_check = form.checked.data
             l1 = Letter_temp(id=l0.id, sid=letter_temp_origin.sid, checked=to_check)
             add_commit_one(l1)
+            # change the replied field
+            letter_temp_origin.replied = True
+            add_commit_one(letter_temp_origin)
             return render_template('writings_ok.html')
         return render_template('writings.html', form=form, system=None, other=other,
                                lo=letter_origin, checked=tmp_checked)
@@ -113,13 +125,17 @@ def magic():
         --- and also report some logs.
         <!!> This function is quite tedious and bad-written <!!>
     """
+    # print("Magic start!!")
     # in fact need authorization, but leave it for simplicity #todo
     # step 1: send the letters to friends
-    letters = Letter.query().filter(Letter.status == Letter.MC_STA_ON).filter(Letter.type == Letter.MC_TO_FR).all()
+    letters = Letter.query.filter(Letter.status == Letter.MC_STA_ON).filter(Letter.type == Letter.MC_TO_FR).all()
     num_s1 = len(letters)
     for l in letters:
         l.status = Letter.MC_STA_SENT
         l.sent_time = datetime.utcnow()
+        f = Friend.get_one_bytwoid(l.send_id, l.recv_id)
+        f.num += 1
+        add_commit_one(f)
     add_commit_ones(letters)
     # step 2: send the temp letters and possibly add friends
     letters2 = db.session.query(Letter, Letter_temp).filter(Letter.id == Letter_temp.id)\
@@ -132,6 +148,7 @@ def magic():
         s = lt.session
         f = Friend.get_one_bytwoid(s.uid1, s.uid2)
         s.num += 1
+        s.last_time = datetime.utcnow()
         f.num += 1
         if s.status == Session.MC_STA_OPEN:
             # check for the check
@@ -157,7 +174,7 @@ def magic():
             a, b = b, a
         # create session
         u1, u2 = a[0].send_id, b[0].send_id
-        s = Session(uid1=u1, uid2=u2, num=2)
+        s = Session(uid1=u1, uid2=u2, num=2, last_time=datetime.utcnow())
         add_commit_one(s)
         # possibly create (temp) friend
         f = Friend.get_one_bytwoid(u1, u2)
@@ -192,5 +209,6 @@ def magic():
 
 @main.route('/logs')
 def logs():
-    ls = Log.query.all()
-    return render_template("logs.html", logs=ls)
+    ls = Log.query.filter().all()
+    # print(len(ls))
+    return render_template("logs.html", logs=ls, datetime=datetime)

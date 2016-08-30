@@ -10,16 +10,30 @@
             System
         {% endif %}
     </p>
-    <p>Write-time: {{letter.write_time}} Sent-time: {{letter.sent_time}}</p>
+    <p>Write-time: {{time_local(letter.write_time)}} Sent-time: {{time_local(letter.sent_time)}}</p>
+    <p>
+        Type: {{letter.NOTE_TYPE[letter.type]}}
+        Status:
+        {% if letter.receiver.id == me.id %}
+            {{letter.NOTE_STATUS_RECV[letter.status]}}
+        {% else %}
+            {{letter.NOTE_STATUS_SEND[letter.status]}}
+        {% endif %}
+    </p>
     <p>Title: {{letter.title}}</p>
     <p>Text: {{letter.text|safe}}</p>
     <br>
+    <!--reply-->
     {% if info_reply %}
         <a href="{{ url_for('main.writings', uid=info_reply['uid'], lid=info_reply['lid']) }}">reply</a>
     {% else %}
         <a> reply(can't)</a>
     {% endif %}
-    {% if 'checked_for_temp' in info_reply and info_reply['checked_for_temp'] %}
+    <!--checked info-->
+    {% if info_reply and 'checked_for_temp' in info_reply and info_reply['checked_for_temp'] %}
         The sender want to be your penpal, if you want too, reply and check.
+    {% endif %}
+    {% if me_check %}
+        You have applied to be a penpal in this letter.
     {% endif %}
 {% endblock %}

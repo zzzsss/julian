@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
+{% macro time_local(t) %}
+{% if t %}
+    {{t+(datetime.now()-datetime.utcnow())}}
+{% else %}
+    Unsent
+{% endif %}
+{% endmacro %}
+
 {% block page_content %}
     <div>
         Menu:

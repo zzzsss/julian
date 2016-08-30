@@ -1,6 +1,7 @@
 from datetime import datetime
 from . import db
-from .main.forms import *
+# from .main.forms import InfoForm
+# from flask_wtf import Form
 from flask import abort
 from sqlalchemy import or_, and_
 
@@ -61,7 +62,7 @@ class User(db.Model):
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     # columns-info
-    penname = db.Column(db.String(64), default="Anonymous")
+    penname = db.Column(db.String(64))
     gender = db.Column(db.Integer, default=0)  # 0:boy, 1:girl
     # --- START who-can-see-this-fileds
     age = db.Column(db.Integer, default=0)
@@ -83,11 +84,11 @@ class User(db.Model):
         return User.query.filter_by(username=uname).first()
 
     @staticmethod
-    def add_one(uname, pw_hash):
+    def add_one(uname, pw_hash, penname="Anonymous"):
         """ To add a new user with username and hashed-pass
         :Used-by: .register
         """
-        one = User(username=uname, password_hash=pw_hash)
+        one = User(username=uname, penname=penname, password_hash=pw_hash)
         add_commit_one(one)
 
     # from and to the form, object methods
@@ -95,7 +96,7 @@ class User(db.Model):
         """ To fill into the InfoForm
         :Used-by: .settings(GET)
         """
-        assert isinstance(f, InfoForm)
+        # assert isinstance(f, InfoForm)
         f.penname.data = self.penname
         f.age.data = self.age
         f.gender.data = self.gender
@@ -107,7 +108,7 @@ class User(db.Model):
         """ To change the data from InfoForm (may throw, maybe need further considerations)
         :Used-by: .settings(POST)
         """
-        assert isinstance(f, InfoForm)
+        # assert isinstance(f, InfoForm)
         self.age = f.age.data
         self.penname = f.penname.data
         self.gender = f.gender.data
@@ -127,6 +128,9 @@ class Letter(db.Model):
     # some magic constants
     MC_TO_FR, MC_TO_SYS, MC_TO_TMP = 0, 1, 2
     MC_STA_ON, MC_STA_SENT, MC_STA_OPN = 0, 1, 2
+    NOTE_TYPE = ["friend", "system", "temp"]
+    NOTE_STATUS_SEND = ["unsent", "sent", "sent"]     # from sender's point of view
+    NOTE_STATUS_RECV = ["unsent", "sent", "opened"]   # from receiver's point of view
 
     # columns
     id = db.Column(db.Integer, primary_key=True)

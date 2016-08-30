@@ -5,6 +5,7 @@ from . import main
 from .forms import *
 from .helpers import *
 from ..models import Letter_temp, Session, Friend
+from datetime import datetime
 
 HOMEPAGE = ".welcome"
 
@@ -49,8 +50,8 @@ def logout():
     :Description: quick and easy, almost nothing to do
     :Use:
     """
-    session.pop('logged_in', None)
-    flash('You were logged out.')
+    if session.pop('logged_in', None):
+        flash('You were logged out.')
     return redirect('/')
 
 @main.route('/register', methods=['GET','POST'])
@@ -71,7 +72,7 @@ def register():
         elif password != password2:
             error = "The two passwords do not match"
         else:
-            User.add_one(username, generate_password_hash(password))
+            User.add_one(username, generate_password_hash(password), form.penname.data)
             flash('You were successfully registered and can login now')
             return redirect(url_for('.login'))
     return render_template('register.html', form=form, error=error)
@@ -96,7 +97,7 @@ def settings():
     user = get_user_or_401()
     form = InfoForm()
     if form.validate_on_submit():
-        print(user)
+        # print(user)
         user.assign_fromform(form)      # could have use Form.populate_obj, but for safety
         flash("Changes saved.")
         return redirect(url_for('.settings'))
@@ -120,7 +121,7 @@ def receivings():
     letters_toquery = Letter.query.filter(Letter.recv_id == user.id).filter(Letter.status != Letter.MC_STA_ON)
     letters = Arg_receivings_f[param](letters_toquery).order_by(Letter.write_time).all()
     # finally render
-    return render_template('receivings.html', letters=letters, l=Arg_receivings_list)
+    return render_template('receivings.html', letters=letters, l=Arg_receivings_list, datetime=datetime)
 
 @main.route('/sendings')
 def sendings():
@@ -137,7 +138,7 @@ def sendings():
     letters_toquery = Letter.query.filter(Letter.send_id == user.id)
     letters = Arg_sendings_f[param](letters_toquery).order_by(Letter.write_time).all()
     # finally render
-    return render_template('sendings.html', letters=letters, l=Arg_sendings_list)
+    return render_template('sendings.html', letters=letters, l=Arg_sendings_list, datetime=datetime)
 
 @main.route('/sessions')
 def sessions0():
@@ -169,14 +170,18 @@ def sessions(sid):
     other = None
     if user.id == s.user1.id:
         other = s.user2
+        checked_me, checked_other = s.u1_checked, s.u2_checked
     elif user.id == s.user2.id:
         other = s. user1
+        checked_me, checked_other = s.u2_checked, s.u1_checked
     else:
         flash("You can not see this session.")
+        checked_me, checked_other = None, None
         abort(401)
     # get all the letters
     letters = Letter_temp.get_bysid_joint(s.id)
-    return render_template('one_session.html', letters=letters, other=other, s=s)
+    return render_template('one_session.html', letters=letters, checked=[checked_me, checked_other],
+                           other=other, s=s, datetime=datetime)
 
 @main.route('/penpals')
 def penpals0():
@@ -186,15 +191,17 @@ def penpals0():
     user = get_user_or_401()
     fs = Friend.get_byuid(user.id)
     fs = [f for f in fs if f.status == Friend.MC_STA_OK]    # only ok friends
-    us = []     # add the User info of friends
+    fus = []     # add the User info of friends: list of (Friend, User)
     for f in fs:
         if user.id == f.user1.id:
-            us.append(f.user2)
+            fus.append((f, f.user2))
         elif user.id == f.user2.id:
-            us.append(f.user1)
+            fus.append((f, f.user1))
         else:
             abort(500)
-    return render_template('penpals.html', us=us, fs=fs, zip=zip)
+    # sort by penname
+    fus.sort(key=lambda x: x[1].penname)
+    return render_template('penpals.html', fus=fus)
 
 @main.route('/penpals/<int:uid>')
 def penpals(uid):
@@ -219,4 +226,4 @@ def penpals(uid):
     # check for the status
     if_display, _ = can_see(user, other, f)
     if_write, _ = can_write(user, other, f)
-    return render_template('one_penpal.html', friend=f, other=user, if_display=if_display, if_write=if_write)
+    return render_template('one_penpal.html', f=f, other=other, if_display=if_display, if_write=if_write)

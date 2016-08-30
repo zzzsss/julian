@@ -10,8 +10,10 @@
     <ul class="entries">
         {% for one in letters %}
         <li>
-            Date: {{one.write_time}}
-            From: {{one.sender.penname}}
+            Date: {{time_local(one.write_time)}}
+            From: <a href="{{ url_for('main.penpals', uid=one.sender.id) }}">{{one.sender.penname}}</a>
+            Type: {{one.NOTE_TYPE[one.type]}}
+            Status: {{one.NOTE_STATUS_RECV[one.status]}}
             <a href="{{ url_for('main.letters', lid=one.id) }}">view</a>
         </li>
         {% else %}  <li><em>Unbelievable, No Letters received so far.</em></li>

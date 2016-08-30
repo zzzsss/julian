@@ -11,6 +11,7 @@ class LoginForm(Form):
 
 class RegisterForm(Form):
     name = StringField('username:', validators=[DataRequired()])
+    penname = StringField('penname:', validators=[DataRequired()])
     passwd = PasswordField('password:', validators=[DataRequired()])
     passwd2 = PasswordField('password again:', validators=[DataRequired()])
     submit = SubmitField('Submit')

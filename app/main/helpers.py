@@ -21,7 +21,7 @@ Arg_receivings_f = {
     "unread": lambda x: x.filter(Letter.status != Letter.MC_STA_OPN),
     "read": lambda x: x.filter(Letter.status == Letter.MC_STA_OPN),
     "frompenpals": lambda x: x.filter(Letter.type == Letter.MC_TO_FR),
-    "fromtemp": lambda x: x.filter(Letter.type == Letter.MC_TO_FR)
+    "fromtemp": lambda x: x.filter(Letter.type != Letter.MC_TO_FR)
 }
 
 # arguments of /sendings
@@ -32,7 +32,7 @@ Arg_sendings_f = {
     "unsent": lambda x: x.filter(Letter.status == Letter.MC_STA_ON),
     "sent": lambda x: x.filter(Letter.status != Letter.MC_STA_ON),
     "topenpals": lambda x: x.filter(Letter.type == Letter.MC_TO_FR),
-    "totemp": lambda x: x.filter(Letter.type == Letter.MC_TO_FR)
+    "totemp": lambda x: x.filter(Letter.type != Letter.MC_TO_FR)
 }
 
 # arguements of /writings
@@ -87,6 +87,7 @@ def can_write(me, other, f):
 def get_info_reply(me, letter):
     """ To get the information for whether a reply could be ok
             --- this may be somewhat complicated and not so clear
+    :True-when: can reply when me is letter.receiver and (friend-ok or temp-unreplied)
     :param-need: At least the first two are needed, me and letter
     :return: None or {uid:...,lid:...}, (...)
     :Used-by: .letters/<lid>
@@ -101,21 +102,23 @@ def get_info_reply(me, letter):
         return None, (me, letter)
     # 2. check further
     else:
-        other = letter.receiver
+        other = letter.sender
         f = Friend.get_one_bytwoid(me.id, other.id)
         # 2.0. if no friendship
         if f is None:
             return None, (me, letter)
+        # todo: moved here to fix the potential bug (writings/lid=? to friend-ok, but with one more query)
+        # -- this happened only in testing (unlikely in real), but ...
+        letter_temp = get_one_byid(Letter_temp, letter.id)
         # 2.1. if friend-ok
         if f.status == Friend.MC_STA_OK:
-            return {'uid': other.id, 'lid': letter.lid}, (me, letter, other, f)
+            return {'uid': other.id, 'lid': letter.id}, (me, letter, other, f, letter_temp)
         # 2.2. if friend-temp, each temp-letter can be replied only once
         # todo: adding time limit for the temp-letters
-        letter_temp = get_one_byid(Letter_temp, letter.id)
         if letter_temp.replied:
             return None, (me, letter, other, f, letter_temp)
         else:
-            return {'uid': None, 'lid': letter.lid, 'checked_for_temp': letter_temp.checked}, \
+            return {'uid': None, 'lid': letter.id, 'checked_for_temp': letter_temp.checked}, \
                    (me, letter, other, f, letter_temp)
 
 def checked_forone(me, s):
@@ -129,6 +132,6 @@ def checked_forone(me, s):
     if me.id == s.uid1:
         return s.u1_checked
     elif me.id == s.uid2:
-        return s.u2_checkd
+        return s.u2_checked
     else:
         abort(500)

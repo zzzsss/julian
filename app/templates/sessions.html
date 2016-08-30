@@ -4,7 +4,7 @@
     <ul class="entries">
     {% for one, u in zip(sessions, others) %}
         <li>
-        With: {{ u.penname }} #letters: {{ one.num }}
+        With: <a href="{{ url_for('main.penpals', uid=u.id) }}">{{u.penname}}</a> #letters: {{ one.num }}
         <a href="{{ url_for('main.sessions', sid=one.id) }}">view</a>
         </li>
     {% else %}
