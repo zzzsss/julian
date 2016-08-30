@@ -30,3 +30,6 @@ if __name__ == '__main__':
 # todo-list:
 # flask-login, system-manage, dealing-errors
 
+# FIX: v0.1.1
+# 2 fixed: one-session-filter, get_info_reply.check-fr
+# unfixed: one-letter display, /writings/lid=? to already-friend, release checked from letter

@@ -180,6 +180,9 @@ def sessions(sid):
         abort(401)
     # get all the letters
     letters = Letter_temp.get_bysid_joint(s.id)
+    # ---------- Fix Bug for v0.1.1: can not display unsent in-box letters ---------- #
+    letters = [x for x in letters if not (user.id==x[0].recv_id and x[0].status==Letter.MC_STA_ON)]
+    # ---------- Fix Bug for v0.1.1 ---------- #
     return render_template('one_session.html', letters=letters, checked=[checked_me, checked_other],
                            other=other, s=s, datetime=datetime)
 

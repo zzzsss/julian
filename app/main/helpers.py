@@ -107,6 +107,10 @@ def get_info_reply(me, letter):
         # 2.0. if no friendship
         if f is None:
             return None, (me, letter)
+        # ---------- Fix Bug for v0.1.1: not all are letter_temp ---------- #
+        if letter.type == Letter.MC_TO_FR:
+            return {'uid': other.id}, (me, letter, other, f)
+        # ---------- Fix Bug for v0.1.1 ---------- #
         # todo: moved here to fix the potential bug (writings/lid=? to friend-ok, but with one more query)
         # -- this happened only in testing (unlikely in real), but ...
         letter_temp = get_one_byid(Letter_temp, letter.id)
