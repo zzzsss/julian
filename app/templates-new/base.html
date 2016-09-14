@@ -1,0 +1,44 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}LE{% endblock %}
+
+{% block head %}
+{{ super() }}
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">-->
+<!-- basic styles -->
+<link href="{{ url_for('static', filename='assets/css/bootstrap.min.css') }}" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/font-awesome.min.css') }}" />
+<!-- ace styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/ace.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/ace-rtl.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/ace-skins.min.css') }}" />
+<!-- ace settings handler -->
+<script src="{{ url_for('static', filename='assets/js/ace-extra.min.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+    <!--<h1>Time for Letter Exchange</h1>-->
+    <!--<div class="metanav">-->
+    <!--{% if not session.logged_in %}-->
+        <!--<a href="{{ url_for('main.login') }}">login</a>-->
+        <!--<a href="{{ url_for('main.register') }}">register</a>-->
+    <!--{% else %}-->
+        <!--<a href="{{ url_for('main.logout') }}">log out</a>-->
+    <!--{% endif %}-->
+    <!--</div>-->
+    {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+    {% block page_content %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}

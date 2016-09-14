@@ -8,17 +8,99 @@
 {% endif %}
 {% endmacro %}
 
+<!--The protocol for the arguments of the render_template-->
+<!--datetime = datetime-->
+<!--user = user-->
+
+<!--The main layout after login-->
 {% block page_content %}
-    <div>
-        Menu:
-        <a href="{{ url_for('main.welcome') }}">welcome</a>
-        <a href="{{ url_for('main.settings') }}">settings</a>
-        <a href="{{ url_for('main.receivings') }}">receivings</a>
-        <a href="{{ url_for('main.sendings') }}">sendings</a>
-        <a href="{{ url_for('main.sessions0') }}">sessions</a>
-        <a href="{{ url_for('main.writings') }}">writings</a>
-        <a href="{{ url_for('main.penpals0') }}">penpals</a>
-        <!--<p>Hello (for debug), {{ user }}.</p>-->
-        {%block main%}{%endblock%}
+    <!-- begin #page-loader -->
+    <div id="page-loader" class="fade in"><span class="spinner"></span></div>
+    <!-- end #page-loader -->
+
+    <!-- begin #page-container -->
+    <div id="page-container" class="fade page-sidebar-fixed page-header-fixed">
+        <!-- begin #header -->
+        <div id="header" class="header navbar navbar-default navbar-fixed-top">
+            <!-- begin container-fluid -->
+            <div class="container-fluid">
+                <!-- begin mobile sidebar expand / collapse button -->
+                <div class="navbar-header">
+                    <a href="{{ url_for('main.login') }}" class="navbar-brand"><span class="navbar-logo"></span> Mail System</a>
+                    <button type="button" class="navbar-toggle" data-click="sidebar-toggled">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <!-- end mobile sidebar expand / collapse button -->
+
+                <!-- begin header navigation right -->
+                <ul class="nav navbar-nav navbar-right">
+                    <!--<li>-->
+                        <!--<form class="navbar-form full-width">-->
+                            <!--<div class="form-group">-->
+                                <!--<input type="text" class="form-control" placeholder="Enter keyword" />-->
+                                <!--<button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>-->
+                            <!--</div>-->
+                        <!--</form>-->
+                    <!--</li>-->
+                    <li class="dropdown navbar-user">
+                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+                            <!--<img src="assets/img/user-13.jpg" alt="" />-->
+                            <span class="hidden-xs">{{ user.penname }}</span> <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu animated fadeInLeft">
+                            <li class="arrow"></li>
+                            <li><a href="{{ url_for('main.settings') }}">Edit Profile</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{{ url_for('main.logout') }}">Log Out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- end header navigation right -->
+            </div>
+            <!-- end container-fluid -->
+        </div>
+        <!-- end #header -->
+
+
+        <!-- begin #content -->
+        <div id="content" class="content content-full-width">
+            <!-- begin vertical-box -->
+            <div class="vertical-box">
+                <!-- begin vertical-box-column -->
+                <div class="vertical-box-column width-250">
+                    <!-- begin wrapper -->
+                    <div class="wrapper">
+                        <p><b>FOLDERS</b></p>
+                        <ul class="nav nav-pills nav-stacked nav-sm">
+                            <li><a href="{{ url_for('main.welcome') }}"><i class="fa fa-send fa-fw m-r-5"></i>Welcome</a></li>
+                            <li><a href="{{ url_for('main.settings') }}"><i class="fa fa-send fa-fw m-r-5"></i>Settings</a></li>
+                            <li><a href="{{ url_for('main.receivings') }}"><i class="fa fa-pencil fa-fw m-r-5"></i>Receivings</a></li>
+                            <li><a href="{{ url_for('main.sendings') }}"><i class="fa fa-trash fa-fw m-r-5"></i>Sendings</a></li>
+                            <li><a href="{{ url_for('main.sessions0') }}"><i class="fa fa-send fa-fw m-r-5"></i>Sessions</a></li>
+                            <li><a href="{{ url_for('main.writings') }}"><i class="fa fa-send fa-fw m-r-5"></i>Writings</a></li>
+                            <li><a href="{{ url_for('main.penpals0') }}"><i class="fa fa-send fa-fw m-r-5"></i>Penpals</a></li>
+                        </ul>
+                    </div>
+                    <!-- end wrapper -->
+                </div>
+                <!-- end vertical-box-column -->
+                <!-- begin vertical-box-column -->
+                <div class="vertical-box-column">
+                    {%block main%}{%endblock%}
+                </div>
+                <!-- end vertical-box-column -->
+            </div>
+            <!-- end vertical-box -->
+        </div>
+        <!-- end #content -->
+
+
+        <!-- begin scroll to top btn -->
+        <a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
+        <!-- end scroll to top btn -->
     </div>
+    <!-- end page container -->
 {% endblock %}

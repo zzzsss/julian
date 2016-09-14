@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <h2>Welcome</h2>
+    {% if user.penname == "Anonymous" %}
+        <p>It seems that you have not set a pen-name, go to <a href="{{ url_for('main.settings') }}">settings</a>.</p>
+    {% else %}
+        <p>Hi, {{ user.penname }}</p>
+    {% endif %}
+{% endblock %}

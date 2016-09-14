@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <h2>The friend's info:</h2>
+    Pen-name:{{other.penname}} Gender:{{["boy", "girl"][other.gender]}} #letters:{{f.num}}
+    {% if if_write %}
+        <p><a href="{{ url_for('main.writings', uid=other.id) }}">write</a></p>
+    {% endif %}
+    {% if if_display %}
+        <p>Age: {{other.age}}</p>
+        <p>Self-introduction: {{other.self_intro}}</p>
+    {% else %}
+        <p>Nothing here.</p>
+    {% endif %}
+{% endblock %}

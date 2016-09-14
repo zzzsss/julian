@@ -1,25 +1,77 @@
 {% extends "layout.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
 {% block main %}
-    <h2>Writing a new letter:</h2>
-    <p>To:
-        {% if system %}
-        system
-        {% else %}
-        <a href="{{ url_for('main.penpals', uid=other.id) }}">{{other.penname}}</a>
-        {% endif %}
-    </p>
-    <p>
-        {% if lo %}
-        (* This letter is for responding a temp letter:
-        <a href="{{ url_for('main.letters', lid=lo.id) }}">{{see}}</a>)
-        {% endif %}
-    </p>
-    {{ wtf.quick_form(form) }}
-    <p>
-        {% if lo and tmp_checked %}
-        (* Notice that you have sent request for being a penpal.)
-        {% endif %}
-    </p>
+    <!-- begin wrapper -->
+    <div class="wrapper">
+        <div class="p-30 bg-white">
+            <!-- begin email form -->
+            <form method="POST" name="email_to_form">
+                {{ form.csrf_token }}
+                <!-- begin email to -->
+                <label class="control-label">To:</label>
+                {% if system %}
+                    system
+                {% else %}
+                    <a href="{{ url_for('main.penpals', uid=other.id) }}">{{other.penname}}</a>
+                {% endif %}
+                <p>
+                    {% if lo %}
+                    (* This letter is for responding a temp letter:
+                    <a href="{{ url_for('main.letters', lid=lo.id) }}">{{see}}</a>)
+                    {% endif %}
+                </p>
+                <!-- end email to -->
+                <!-- begin email subject -->
+                <label class="control-label">Title:</label>
+                <div class="m-b-15">
+                    <input type="text" name="title" class="form-control" />
+                </div>
+                <!-- end email subject -->
+                <!-- begin email content -->
+                <label class="control-label">Content:</label>
+                <div class="m-b-15">
+                    <textarea class="textarea form-control" name="text" placeholder="Enter text ..." rows="12"></textarea>
+                </div>
+                <!-- end email content -->
+                <button type="submit" class="btn btn-primary p-l-40 p-r-40">Send</button>
+                <p>
+                    {% if lo and tmp_checked %}
+                    (* Notice that you have sent request for being a penpal.)
+                    {% endif %}
+                </p>
+            </form>
+            <!-- end email form -->
+        </div>
+    </div>
+    <!-- end wrapper -->
 {% endblock %}
+
+{%block page_script%}
+    <!-- ================== BEGIN BASE JS ================== -->
+    <script src="{{ url_for('static', filename='assets/plugins/jquery/jquery-1.9.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/plugins/jquery/jquery-migrate-1.1.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/plugins/jquery-ui/ui/minified/jquery-ui.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+    <!--[if lt IE 9]>
+        <script src="{{ url_for('static', filename='assets/crossbrowserjs/html5shiv.js') }}"></script>
+        <script src="{{ url_for('static', filename='assets/crossbrowserjs/respond.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='assets/crossbrowserjs/excanvas.min.js') }}"></script>
+    <![endif]-->
+    <script src="{{ url_for('static', filename='assets/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/plugins/jquery-cookie/jquery.cookie.js') }}"></script>
+    <!-- ================== END BASE JS ================== -->
+
+    <!-- ================== BEGIN PAGE LEVEL JS ================== -->
+	<script src="{{ url_for('static', filename='assets/plugins/jquery-tag-it/js/tag-it.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/plugins/bootstrap-wysihtml5/lib/js/wysihtml5-0.3.0.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/plugins/bootstrap-wysihtml5/src/bootstrap-wysihtml5.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/email-compose.demo.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/apps.min.js') }}"></script>
+    <!-- ================== END PAGE LEVEL JS ================== -->
+    <script>
+        $(document).ready(function() {
+            App.init();
+            EmailCompose.init();
+        });
+    </script>
+{%endblock%}

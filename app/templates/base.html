@@ -1,34 +1,39 @@
-{% extends "bootstrap/base.html" %}
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8" />
+    <title>LE</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!--<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">-->
+    <!-- ================== BEGIN BASE CSS STYLE ================== -->
+    <!--<link href="http://fonts.useso.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">-->
+    <link href="{{ url_for('static', filename='assets/plugins/jquery-ui/themes/base/minified/jquery-ui.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='assets/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='assets/plugins/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='assets/css/animate.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='assets/css/style.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='assets/css/style-responsive.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='assets/css/theme/default.css') }}" rel="stylesheet" id="theme" />
+    <!-- ================== END BASE CSS STYLE ================== -->
+    <!-- ================== BEGIN BASE JS ================== -->
+    <script src="{{ url_for('static', filename='assets/plugins/pace/pace.min.js') }}"></script>
+    <!-- ================== END BASE JS ================== -->
+    {% block head_more %}{% endblock %}
+</head>
 
-{% block title %}LE{% endblock %}
-
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-{% endblock %}
-
-{% block content %}
-<div class="container">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-    </div>
-    {% endfor %}
-    <h1>Time for Letter Exchange</h1>
-    <div class="metanav">
-    {% if not session.logged_in %}
-        <a href="{{ url_for('main.login') }}">login</a>
-        <a href="{{ url_for('main.register') }}">register</a>
-    {% else %}
-        <a href="{{ url_for('main.logout') }}">log out</a>
-    {% endif %}
-    </div>
-    {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
-    {% block page_content %}{% endblock %}
+<body>
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ message }}
 </div>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-{% endblock %}
+{% endfor %}
+{% block page_content %}{% endblock %}
+{% block page_script %}{% endblock %}
+</body>
+</html>

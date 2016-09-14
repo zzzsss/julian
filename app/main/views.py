@@ -121,7 +121,7 @@ def receivings():
     letters_toquery = Letter.query.filter(Letter.recv_id == user.id).filter(Letter.status != Letter.MC_STA_ON)
     letters = Arg_receivings_f[param](letters_toquery).order_by(Letter.write_time).all()
     # finally render
-    return render_template('receivings.html', letters=letters, l=Arg_receivings_list, datetime=datetime)
+    return render_template('receivings.html', user=user, letters=letters, l=Arg_receivings_list, datetime=datetime)
 
 @main.route('/sendings')
 def sendings():
@@ -138,7 +138,7 @@ def sendings():
     letters_toquery = Letter.query.filter(Letter.send_id == user.id)
     letters = Arg_sendings_f[param](letters_toquery).order_by(Letter.write_time).all()
     # finally render
-    return render_template('sendings.html', letters=letters, l=Arg_sendings_list, datetime=datetime)
+    return render_template('sendings.html', user=user, letters=letters, l=Arg_sendings_list, datetime=datetime)
 
 @main.route('/sessions')
 def sessions0():
@@ -155,7 +155,7 @@ def sessions0():
             others.append(s.user2)
         else:
             others.append(s.user1)
-    return render_template('sessions.html', sessions=sessions, others=others, zip=zip)
+    return render_template('sessions.html', user=user, sessions=sessions, others=others, zip=zip)
 
 @main.route('/sessions/<int:sid>')
 def sessions(sid):
@@ -183,7 +183,7 @@ def sessions(sid):
     # ---------- Fix Bug for v0.1.1: can not display unsent in-box letters ---------- #
     letters = [x for x in letters if not (user.id==x[0].recv_id and x[0].status==Letter.MC_STA_ON)]
     # ---------- Fix Bug for v0.1.1 ---------- #
-    return render_template('one_session.html', letters=letters, checked=[checked_me, checked_other],
+    return render_template('one_session.html', user=user, letters=letters, checked=[checked_me, checked_other],
                            other=other, s=s, datetime=datetime)
 
 @main.route('/penpals')
@@ -204,7 +204,7 @@ def penpals0():
             abort(500)
     # sort by penname
     fus.sort(key=lambda x: x[1].penname)
-    return render_template('penpals.html', fus=fus)
+    return render_template('penpals.html', user=user, fus=fus)
 
 @main.route('/penpals/<int:uid>')
 def penpals(uid):
@@ -229,4 +229,4 @@ def penpals(uid):
     # check for the status
     if_display, _ = can_see(user, other, f)
     if_write, _ = can_write(user, other, f)
-    return render_template('one_penpal.html', f=f, other=other, if_display=if_display, if_write=if_write)
+    return render_template('one_penpal.html', user=user, f=f, other=other, if_display=if_display, if_write=if_write)

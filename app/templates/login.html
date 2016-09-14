@@ -1,8 +1,27 @@
-{% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% extends "layout0.html" %}
 
-{% block page_content %}
-  <h2>Login</h2>
-  {% if error %}<p class="error"><strong>Error:</strong> {{ error }}{% endif %}
-  {{ wtf.quick_form(form) }}
+{% block form_content %}
+<div class="login-content">
+    <h3>Login</h3>
+    <form action="{{ url_for('main.login') }}" method="POST" class="margin-bottom-0">
+        {{ form.csrf_token }}
+        <div class="form-group m-b-20">
+            <input id="name" name="name" type="text" class="form-control input-lg" placeholder="Username" />
+        </div>
+        <div class="form-group m-b-20">
+            <input id="passwd" name="passwd" type="text" class="form-control input-lg" placeholder="Password" />
+        </div>
+        <!--<div class="checkbox m-b-20">-->
+            <!--<label>-->
+                <!--<input type="checkbox" /> Remember Me-->
+            <!--</label>-->
+        <!--</div>-->
+        <div class="login-buttons">
+            <button id="submit" name="submit" type="submit" class="btn btn-success btn-block btn-lg">Sign me in</button>
+        </div>
+        <div class="m-t-20">
+            Not a member yet? Click <a href="{{ url_for('main.register') }}">here</a> to register.
+        </div>
+    </form>
+</div>
 {% endblock %}

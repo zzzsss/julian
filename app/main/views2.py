@@ -36,7 +36,7 @@ def letters(lid):
         if letter.type == Letter.MC_TO_TMP:
             me_checked = get_one_byid(Letter_temp, letter.id).checked
     # todo: maybe rethink about the interface to the html
-    return render_template("one_letter.html", letter=letter, info_reply=info_reply,
+    return render_template("one_letter.html", user=user, letter=letter, info_reply=info_reply,
                            me=user, me_check=me_checked, datetime=datetime)
 
 # To write a letter
@@ -60,8 +60,8 @@ def writings():
             l2 = Letter_system(id=l0.id)
             add_commit_one(l1)
             add_commit_one(l2)
-            return render_template('writings_ok.html')
-        return render_template('writings.html', form=form, system=1, other=None, lo=None)
+            return render_template('writings_ok.html', user=user)
+        return render_template('writings.html', user=user, form=form, system=1, other=None, lo=None)
     # 1.2 uid
     num_uid = request.args.get('uid', None, int)
     num_lid = request.args.get('lid', None, int)
@@ -81,8 +81,8 @@ def writings():
                 l0 = Letter(send_id=user.id, recv_id=num_uid, type=Letter.MC_TO_FR,
                             title=form.title.data, text=form.text.data)
                 add_commit_one(l0)
-                return render_template('writings_ok.html')
-            return render_template('writings.html', form=form, system=None, other=other, lo=None)
+                return render_template('writings_ok.html', user=user)
+            return render_template('writings.html', user=user, form=form, system=None, other=other, lo=None)
     # 1.3 lid -- if already friend, should use uid=?
     if num_lid is not None:
         # check, re-use the get_info_reply
@@ -111,11 +111,11 @@ def writings():
             # change the replied field
             letter_temp_origin.replied = True
             add_commit_one(letter_temp_origin)
-            return render_template('writings_ok.html')
-        return render_template('writings.html', form=form, system=None, other=other,
+            return render_template('writings_ok.html', user=user)
+        return render_template('writings.html', user=user, form=form, system=None, other=other,
                                lo=letter_origin, checked=tmp_checked)
     # 1.4 no-one
-    return render_template('writings2whom.html')
+    return render_template('writings2whom.html', user=user)
 
 # To send the letters
 # the magic, which changes the letters and generate the sessions

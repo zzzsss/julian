@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <h2>Recevings</h2>
+    <p>
+        {% for one in l %}
+            <a href="{{ url_for('main.receivings', filter='%s' % one) }}">{{one}}</a>
+        {% endfor %}
+    </p>
+    <ul class="entries">
+        {% for one in letters %}
+        <li>
+            Date: {{time_local(one.write_time)}}
+            From: <a href="{{ url_for('main.penpals', uid=one.sender.id) }}">{{one.sender.penname}}</a>
+            Type: {{one.NOTE_TYPE[one.type]}}
+            Status: {{one.NOTE_STATUS_RECV[one.status]}}
+            <a href="{{ url_for('main.letters', lid=one.id) }}">view</a>
+        </li>
+        {% else %}  <li><em>Unbelievable, No Letters received so far.</em></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

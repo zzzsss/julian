@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block main %}
+    <h2>The list of your penpals:</h2>
+    <ul class="entries">
+    {% for f, u in fus %}
+    <li>
+        Pen-name:{{u.penname}}
+        Gender:{{["boy", "girl"][u.gender]}}
+        #letters:{{f.num}}
+        <a href="{{ url_for('main.penpals', uid=u.id) }}">more</a>
+        <a href="{{ url_for('main.writings', uid=u.id) }}">write</a>
+    </li>
+    {% else %}
+      <li><em>Unbelievable.  No penpals here so far</em></li>
+    {% endfor %}
+    </ul>
+{% endblock %}

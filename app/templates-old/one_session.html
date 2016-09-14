@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block main %}
+    <h2>The list of letters:</h2>
+    <p>With: <a href="{{ url_for('main.penpals', uid=other.id) }}">{{other.penname}}</a></p>
+    <ul class="entries">
+        {% for one, n in letters %}
+        <li>
+            Date: {{one.write_time}}
+            From: <a href="{{ url_for('main.penpals', uid=one.sender.id) }}">{{one.sender.penname}}</a>
+            To: <a href="{{ url_for('main.penpals', uid=one.receiver.id) }}">{{one.receiver.penname}}</a>
+            Type: {{one.NOTE_TYPE[one.type]}}
+            Status: {{one.NOTE_STATUS_RECV[one.status]}}
+            <a href="{{ url_for('main.letters', lid=one.id) }}">view</a>
+        </li>
+        {% else %}  <li><em>Unbelievable, No Letters received so far.</em></li>
+        {% endfor %}
+    </ul>
+    <p>Checked?: me: {{checked[0]}}, other: {{checked[1]}}</p>
+    <!-- The status of this session -->
+    {% if s.status == s.MC_STA_NOPE %}
+    <p>Sorry, this session is not active.</p>
+    {% elif s.status == s.MC_STA_SUCC %}
+    <p>Yep, this session is closed for success.</p>
+    {% else %}
+    <p>Still active.</p>
+    {% endif %}
+{% endblock %}

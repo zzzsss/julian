@@ -1,17 +1,61 @@
 {% extends "layout.html" %}
+
 {% block main %}
     <h2>The list of your penpals:</h2>
-    <ul class="entries">
-    {% for f, u in fus %}
-    <li>
-        Pen-name:{{u.penname}}
-        Gender:{{["boy", "girl"][u.gender]}}
-        #letters:{{f.num}}
-        <a href="{{ url_for('main.penpals', uid=u.id) }}">more</a>
-        <a href="{{ url_for('main.writings', uid=u.id) }}">write</a>
-    </li>
-    {% else %}
-      <li><em>Unbelievable.  No penpals here so far</em></li>
-    {% endfor %}
+    <!-- begin list-email -->
+    <ul class="list-group list-group-lg no-radius list-email">
+        {% for f, u in fus %}
+        <li class="list-group-item inverse">
+            <div class="email-info">
+                Pen-name:{{u.penname}}
+                Gender:{{["boy", "girl"][u.gender]}}
+                #letters:{{f.num}}
+                <a href="{{ url_for('main.penpals', uid=u.id) }}">more</a>
+                <a href="{{ url_for('main.writings', uid=u.id) }}">write</a>
+            </div>
+        </li>
+        {% else %}  <li><em>Unbelievable, No penpals so far.</em></li>
+        {% endfor %}
     </ul>
+    <!-- end list-email -->
+    <!-- begin wrapper -->
+    <div class="wrapper bg-silver-lighter clearfix">
+        <div class="btn-group pull-right">
+            <button class="btn btn-white btn-sm">
+                <i class="fa fa-chevron-left"></i>
+            </button>
+            <button class="btn btn-white btn-sm">
+                <i class="fa fa-chevron-right"></i>
+            </button>
+        </div>
+        <!--<div class="m-t-5">共1封邮件</div>-->
+    </div>
+    <!-- end wrapper -->
 {% endblock %}
+
+{%block page_script%}
+    <!-- ================== BEGIN BASE JS ================== -->
+    <script src="{{ url_for('static', filename='assets/plugins/jquery/jquery-1.9.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/plugins/jquery/jquery-migrate-1.1.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/plugins/jquery-ui/ui/minified/jquery-ui.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+    <!--[if lt IE 9]>
+        <script src="{{ url_for('static', filename='assets/crossbrowserjs/html5shiv.js') }}"></script>
+        <script src="{{ url_for('static', filename='assets/crossbrowserjs/respond.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='assets/crossbrowserjs/excanvas.min.js') }}"></script>
+    <![endif]-->
+    <script src="{{ url_for('static', filename='assets/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/plugins/jquery-cookie/jquery.cookie.js') }}"></script>
+    <!-- ================== END BASE JS ================== -->
+
+    <!-- ================== BEGIN PAGE LEVEL JS ================== -->
+    <script src="{{ url_for('static', filename='assets/js/email-inbox-v2.demo.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/apps.min.js') }}"></script>
+    <!-- ================== END PAGE LEVEL JS ================== -->
+    <script>
+        $(document).ready(function() {
+            App.init();
+            InboxV2.init();
+        });
+    </script>
+{%endblock%}
