@@ -17,7 +17,7 @@
                 <p>
                     {% if lo %}
                     (* This letter is for responding a temp letter:
-                    <a href="{{ url_for('main.letters', lid=lo.id) }}">{{see}}</a>)
+                    <a href="{{ url_for('main.letters', lid=lo.id) }}">view</a>)
                     {% endif %}
                 </p>
                 <!-- end email to -->
@@ -33,6 +33,13 @@
                     <textarea class="textarea form-control" name="text" placeholder="Enter text ..." rows="12"></textarea>
                 </div>
                 <!-- end email content -->
+                {% if "checked" in form.__dict__ %}
+                <div class="checkbox">
+                    <label>
+                        <input id="checked" name="checked" type="checkbox" value="y"> Want to add penpal?
+                    </label>
+                </div>
+		        {% endif %}
                 <button type="submit" class="btn btn-primary p-l-40 p-r-40">Send</button>
                 <p>
                     {% if lo and tmp_checked %}
