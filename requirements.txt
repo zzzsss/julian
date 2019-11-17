@@ -31,7 +31,7 @@ docutils==0.12
 dominate==2.2.0
 dynd===5a2f274
 fastcache==1.0.2
-Flask==0.10.1
+Flask==1.0
 Flask-Bootstrap==3.3.6.0
 Flask-Migrate==2.0.0
 Flask-Script==2.0.5
